@@ -69,3 +69,14 @@ CREATE TABLE UserEvents(
     FOREIGN KEY (event_id) PREFERENCES Events (id) ON DELETE RESTRICT ON UPDATE CASCADE,
 
 );
+
+DROP TABLE IF EXISTS AccountVerifications;
+
+CREATE TABLE AccountVerifications(
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT UNSIGNED NOT NULL,
+    url VARCHAR(255) NOT NULL,
+    FOREIGN KEY (user_id) PREFERENCES Users (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT UQ_AccountVerifications_Users_Id UNIQUE (user_id),
+    CONSTRAINT UQ_AccountVerifications_Url UNIQUE (url)
+);
