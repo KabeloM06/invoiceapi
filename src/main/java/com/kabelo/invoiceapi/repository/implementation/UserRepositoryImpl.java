@@ -1,6 +1,7 @@
 package com.kabelo.invoiceapi.repository.implementation;
 
 import com.kabelo.invoiceapi.domain.User;
+import com.kabelo.invoiceapi.exception.ApiException;
 import com.kabelo.invoiceapi.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,16 +10,19 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 @RequiredArgsConstructor
 @Slf4j
 public class UserRepositoryImpl implements UserRepository<User> {
+
     private final NamedParameterJdbcTemplate jdbc;
 
     @Override
-    public User create(User data) {
+    public User create(User user) {
         // Check if the email is unique
+        if(getEmailCount(user.getEmail().trim().toLowerCase()) > 0) throw new ApiException("Email already in use. Please use a different email and try again.");
         // Save new user if email is unique
         // Add role to the user
         // Send verification URL
@@ -27,6 +31,8 @@ public class UserRepositoryImpl implements UserRepository<User> {
         // If any errors, throw exception with proper message
         return null;
     }
+
+
 
     @Override
     public Collection<User> list(int page, int pageSize) {
@@ -47,4 +53,10 @@ public class UserRepositoryImpl implements UserRepository<User> {
     public Boolean delete(Long id) {
         return null;
     }
+
+    private Integer getEmailCount(String email) {
+        return jdbc.queryForObject(COUNT_USER_EMAIL_QUERY, Map.of("email", email), Integer.class);
+    }
+
+    private static final String COUNT_USER_EMAIL_QUERY = "";
 }
